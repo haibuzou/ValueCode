@@ -1,0 +1,18 @@
+sealed class HttpResult<out T> {
+    data class Success<out T>(val value: T) : TapResult<T>()
+    data class Failed(val throwable: Throwable) : TapResult<Nothing>()
+}
+
+inline fun <T> HttpResult<T>.doSuccess(success: (T) -> Unit): TapResult<T> {
+    if (this is TapResult.Success) {
+        success(value)
+    }
+    return this
+}
+
+inline fun <T> HttpResult<T>.doFailed(failed: (Throwable?) -> Unit): TapResult<T> {
+    if (this is TapResult.Failed) {
+        failed(throwable)
+    }
+    return this
+}
